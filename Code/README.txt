@@ -1,0 +1,1 @@
+distributions -> prior and posterior
