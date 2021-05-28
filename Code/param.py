@@ -27,3 +27,4 @@ class Parameters:
         self.resume = 'no'
         self.arch = 'mlp'
         self.num_tasks = 1
+        self.sti = 0 

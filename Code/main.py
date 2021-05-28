@@ -77,12 +77,12 @@ print('Inits...')
 model=network.Net(args).to(args.device)
 
 
-print('-'*100)
+print('-'*50)
 appr=approach.Appr(model,args=args)
-print('-'*100)
+print('-'*50)
 
 # args.output=os.path.join(args.results_path, datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
-print('-'*100)
+print('-'*50)
 
 if args.resume == 'yes':
     checkpoint = torch.load(os.path.join(args.checkpoint, 'model_{}.pth.tar'.format(args.sti)))
@@ -128,7 +128,7 @@ for t,ncla in taskcla[args.sti:]:
 
     # Train
     appr.train(task,xtrain,ytrain,xvalid,yvalid)
-    print('-'*100)
+    print('-'*50)
 
     # Test
     for u in range(t+1):

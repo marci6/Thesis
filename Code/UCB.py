@@ -55,7 +55,6 @@ class Appr(object):
         lr = self.init_lr
         patience = self.lr_patience
 
-
         # Loop epochs
         try:
             for e in range(self.nepochs):
@@ -184,10 +183,10 @@ class Appr(object):
         r=torch.LongTensor(r).to(self.device)
 
         num_batches = len(x)//self.sbatch
-        j=0
+#        j=0
         # Loop batches
         for i in range(0,len(r),self.sbatch):
-
+            # b -> batch
             if i+self.sbatch<=len(r): b=r[i:i+self.sbatch]
             else: b=r[i:]
             images, targets = x[b].to(self.device), y[b].to(self.device)
