@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 26 14:22:31 2021
-
-@author: MARCELLOCHIESA
-"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .distributions import VariationalPosterior, Prior
+from distributions import VariationalPosterior, Prior
+
 
 
 class BayesianLinear(nn.Module):
@@ -15,18 +10,19 @@ class BayesianLinear(nn.Module):
     Applies a linear Bayesian transformation to the incoming data: :math:`y = Ax + b`
     '''
 
-    def __init__(self, in_features, out_features, device, args, use_bias=True):
+    def __init__(self, in_features, out_features, args, use_bias=True):
         super(BayesianLinear, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
         self.use_bias = use_bias
-        self.device = device
+        self.device = args.device
         self.rho = args.rho
 
-        # Variational Posterior Distributions - initialization
-        self.weight_mu = nn.Parameter(torch.empty((out_features, in_features), device=self.device, dtype=torch.float32).normal_(0., 0.1), requires_grad=True)
-        self.weight_rho = nn.Parameter(self.rho + torch.empty((out_features, in_features), device=self.device, dtype=torch.float32).normal_(0., 0.1),requires_grad=True)
-        # sample weight
+        # Variational Posterior Distributions
+        self.weight_mu = nn.Parameter(torch.empty((out_features, in_features),
+                                      device=self.device, dtype=torch.float32).normal_(0., 0.1),requires_grad=True)
+        self.weight_rho = nn.Parameter(self.rho + torch.empty((out_features, in_features),
+                                      device=self.device, dtype=torch.float32).normal_(0., 0.1),requires_grad=True)
         self.weight = VariationalPosterior(self.weight_mu, self.weight_rho, self.device)
 
         if self.use_bias:
@@ -39,9 +35,9 @@ class BayesianLinear(nn.Module):
             self.register_parameter('bias', None)            
 
         # Prior Distributions
-        self.weight_prior = Prior(args.std1, args.std2, args.pi, device)
-#        if self.use_bias:      
-#            self.bias_prior = Prior(args)
+        self.weight_prior = Prior(args.std1, args.std2, args.pi, args.device)
+        if self.use_bias:      
+            self.bias_prior = Prior(args.std1, args.std2, args.pi, args.device)
 
         # Initialize log prior and log posterior
         self.log_prior = 0
@@ -59,11 +55,10 @@ class BayesianLinear(nn.Module):
     def forward(self, input, sample=False, calculate_log_probs=False):
         if self.mask_flag:
             self.weight = VariationalPosterior(self.pruned_weight_mu, self.pruned_weight_rho, self.device)
-             if self.use_bias:
-                 self.bias = VariationalPosterior(self.pruned_bias_mu, self.pruned_bias_rho)
+            # if self.use_bias:
+            #     self.bias = VariationalPosterior(self.pruned_bias_mu, self.pruned_bias_rho)
 
         if self.training or sample:
-            # sample weights
             weight = self.weight.sample()
             bias = self.bias.sample() if self.use_bias else None
             
@@ -83,4 +78,6 @@ class BayesianLinear(nn.Module):
             self.log_prior, self.log_variational_posterior = 0, 0
         
         return F.linear(input, weight, bias)
+
+
 

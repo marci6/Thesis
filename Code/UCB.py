@@ -11,7 +11,7 @@ import copy
 import math
 import torch
 import torch.nn.functional as F
-from .optimizer import BayesianSGD
+from optimizer import BayesianSGD
 
 
 class Appr(object):
@@ -26,14 +26,14 @@ class Appr(object):
 
         self.init_lr=args.lr
         self.sbatch=args.sbatch
-        self.nepochs=args.nepochs
+        self.nepochs= args.nepochs
 
         self.arch=args.arch
         self.samples=args.samples
         self.lambda_=1.
 
-        self.output=args.output
-        self.checkpoint = args.checkpoint
+#        self.output=args.output
+#        self.checkpoint = args.checkpoint
         self.experiment=args.experiment
         self.num_tasks=args.num_tasks
 

@@ -4,6 +4,7 @@ Created on Thu May 27 16:08:36 2021
 
 @author: MARCELLOCHIESA
 """
+import os
 import time
 import numpy as np
 import torch
@@ -33,7 +34,8 @@ print('Using device:', args.device)
 #checkpoint = utils.make_directories(args)
 #args.checkpoint = checkpoint
 print()
-#### WORKS ####
+
+
 # Args -- Experiment
 if args.experiment=='mnist2':
     from dataloaders import mnist2 as dataloader
@@ -47,14 +49,14 @@ elif args.experiment=='mixture':
     from dataloaders import mixture as dataloader
 
 # Args -- Approach
-if args.approach= ='ucb':
-    from approaches import ucb as approach
+if args.approach =='ucb':
+    import UCB as approach
 
 # Args -- Network
 if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5':
-    from networks import mlp_ucb as network
+    import MLP as network
 else:
-    from networks import resnet_ucb as network
+    import resnet_ucb as network
 
 
 ########################################################################################################################
@@ -64,10 +66,11 @@ print(datetime.now().strftime("%Y-%m-%d %H:%M"))
 
 # Load
 print('Load data...')
-data,taskcla,inputsize=dataloader.get(data_path=args.data_path, seed=args.seed)
+data,taskcla,inputsize = dataloader.get(data_path=args.data_path, seed=args.seed)
 print('Input size =',inputsize,'\nTask info =',taskcla)
 args.num_tasks=len(taskcla)
 args.inputsize, args.taskcla = inputsize, taskcla
+
 
 # Inits
 print('Inits...')
@@ -88,7 +91,7 @@ if args.resume == 'yes':
 else:
     args.sti = 0
 
-
+#### WORKS ####
 # Loop tasks
 acc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
 lss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
