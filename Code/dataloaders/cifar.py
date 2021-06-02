@@ -5,6 +5,8 @@ import utils
 from torchvision import datasets,transforms
 from sklearn.utils import shuffle
 
+# CIFAR 100 - The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with 6000 images per class.
+
 def get(data_path,seed=0,pc_valid=0.10):
     data={}
     taskcla=[]

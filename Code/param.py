@@ -28,3 +28,7 @@ class Parameters:
         self.arch = 'mlp'
         self.num_tasks = 1
         self.sti = 0 
+        self.checkpoint_dir = '../checkpoints/'
+        self.checkpoint = None
+        self.results_path = '../results/'
+        self.output = ''

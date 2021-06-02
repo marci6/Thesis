@@ -1,0 +1,6 @@
+LOG
+
+27/5/2021: run file, tested parameters import, working
+30/5/2021: mnist-5 training works, results with # epochs = 2 are very high AVG ACC >97%. Need to check all the functions and math behind.
+Next test all other datasets. Check dataset composition. Create visuals/ check for tensorflow board. 
+31/5/2021: Comparison paper - code. SGD in depth. Still to understand why a modulelist. Tensorboard?

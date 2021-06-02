@@ -1,3 +1,0 @@
-LOG
-
-27/5/2021: run file, tested parameters import, working

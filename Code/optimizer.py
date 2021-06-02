@@ -14,7 +14,7 @@ class BayesianSGD(Optimizer):
             raise ValueError("Invalid momentum value: {}".format(momentum))
         if weight_decay < 0.0:
             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
-
+        # 
         defaults = dict(momentum=momentum, dampening=dampening,
                         weight_decay=weight_decay, nesterov=nesterov)
         if nesterov and (momentum <= 0 or dampening != 0):
@@ -50,6 +50,7 @@ class BayesianSGD(Optimizer):
             for p in group['params']:
                 if p.grad is None:
                     continue
+                # derivative
                 d_p = p.grad.data
 
                 if weight_decay != 0:

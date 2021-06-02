@@ -8,7 +8,7 @@ import os
 import time
 import numpy as np
 import torch
-#import utils
+import utils
 from datetime import datetime
 from param import Parameters
 
@@ -31,8 +31,8 @@ if torch.cuda.is_available():
 
 
 print('Using device:', args.device)
-#checkpoint = utils.make_directories(args)
-#args.checkpoint = checkpoint
+checkpoint = utils.make_directories(args)
+args.checkpoint = checkpoint
 print()
 
 
@@ -71,17 +71,19 @@ print('Input size =',inputsize,'\nTask info =',taskcla)
 args.num_tasks=len(taskcla)
 args.inputsize, args.taskcla = inputsize, taskcla
 
-
 # Inits
 print('Inits...')
 model=network.Net(args).to(args.device)
-
+print()
+print('Printing current model...')
+print(model)
+print()
 
 print('-'*50)
 appr=approach.Appr(model,args=args)
 print('-'*50)
 
-# args.output=os.path.join(args.results_path, datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+args.output=os.path.join(args.results_path, datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
 print('-'*50)
 
 if args.resume == 'yes':
@@ -91,7 +93,6 @@ if args.resume == 'yes':
 else:
     args.sti = 0
 
-#### WORKS ####
 # Loop tasks
 acc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
 lss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
@@ -103,18 +104,22 @@ for t,ncla in taskcla[args.sti:]:
     if args.approach == 'joint':
         # Get data. We do not put it to GPU
         if t==0:
+            # data x-y
             xtrain=data[t]['train']['x']
             ytrain=data[t]['train']['y']
             xvalid=data[t]['valid']['x']
             yvalid=data[t]['valid']['y']
+            # task zero array
             task_t=t*torch.ones(xtrain.size(0)).int()
             task_v=t*torch.ones(xvalid.size(0)).int()
             task=[task_t,task_v]
         else:
+            # data x-y
             xtrain=torch.cat((xtrain,data[t]['train']['x']))
             ytrain=torch.cat((ytrain,data[t]['train']['y']))
             xvalid=torch.cat((xvalid,data[t]['valid']['x']))
             yvalid=torch.cat((yvalid,data[t]['valid']['y']))
+            # task array
             task_t=torch.cat((task_t,t*torch.ones(data[t]['train']['y'].size(0)).int()))
             task_v=torch.cat((task_v,t*torch.ones(data[t]['valid']['y'].size(0)).int()))
             task=[task_t,task_v]
@@ -130,7 +135,7 @@ for t,ncla in taskcla[args.sti:]:
     appr.train(task,xtrain,ytrain,xvalid,yvalid)
     print('-'*50)
 
-    # Test
+    # Test model on all previous tasks, after learning current task
     for u in range(t+1):
         xtest=data[u]['test']['x'].to(args.device)
         ytest=data[u]['test']['y'].to(args.device)

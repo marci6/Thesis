@@ -5,6 +5,8 @@ from torchvision import datasets,transforms
 
 ########################################################################################################################
 
+# MNIST divided into 5 sets.
+
 def get(data_path,seed,fixed_order=False,pc_valid=0):
     data={}
     taskcla=[]

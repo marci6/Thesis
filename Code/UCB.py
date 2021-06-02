@@ -32,8 +32,8 @@ class Appr(object):
         self.samples=args.samples
         self.lambda_=1.
 
-#        self.output=args.output
-#        self.checkpoint = args.checkpoint
+        self.output=args.output
+        self.checkpoint = args.checkpoint
         self.experiment=args.experiment
         self.num_tasks=args.num_tasks
 
@@ -58,7 +58,7 @@ class Appr(object):
         # Loop epochs
         try:
             for e in range(self.nepochs):
-                # Train
+                # Train step
                 clock0=time.time()
                 self.train_epoch(t,xtrain,ytrain)
                 clock1=time.time()
@@ -68,7 +68,7 @@ class Appr(object):
                 print('| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
                     1000*self.sbatch*(clock1-clock0)/xtrain.size(0),1000*self.sbatch*(clock2-clock1)/xtrain.size(0),
                     train_loss,100*train_acc),end='')
-                # Valid
+                # Valid accuracy
                 valid_loss,valid_acc=self.eval(t,xvalid,yvalid)
                 print(' Valid: loss={:.3f}, acc={:5.1f}% |'.format(valid_loss, 100 * valid_acc), end='')
 
@@ -78,6 +78,7 @@ class Appr(object):
 
                 # Adapt lr
                 if valid_loss<best_loss:
+                    # save best loss and best model
                     best_loss=valid_loss
                     best_model=copy.deepcopy(self.model.state_dict())
                     patience=self.lr_patience
@@ -85,13 +86,14 @@ class Appr(object):
                 else:
                     patience-=1
                     if patience<=0:
+                        # decrease lr
                         lr/=self.lr_factor
                         print(' lr={:.1e}'.format(lr),end='')
                         if lr<self.lr_min:
                             print()
                             break
                         patience=self.lr_patience
-
+                        # update optimizer
                         params_dict = self.update_lr(t, adaptive_lr=True, lr=lr)
                         self.optimizer=BayesianSGD(params=params_dict)
 
@@ -224,9 +226,11 @@ class Appr(object):
 
                 # Forward
                 outputs=self.model(images,sample=False)
+                # pick output number t
                 output=outputs[t]
+                # compute loss
                 loss = self.elbo_loss(images, targets, t, num_batches,sample=False,debug=debug)
-
+                # take output with highest probability
                 _,pred=output.max(1, keepdim=True)
 
                 total_loss += loss.detach()*len(b)
