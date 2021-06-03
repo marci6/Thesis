@@ -58,7 +58,6 @@ if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 
 else:
     import resnet_ucb as network
 
-
 ########################################################################################################################
 print()
 print("Starting this run on :")
