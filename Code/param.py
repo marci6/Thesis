@@ -23,7 +23,7 @@ class Parameters:
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 200
+        self.nepochs = 10
         self.resume = 'no'
         self.arch = 'mlp'
         self.num_tasks = 1

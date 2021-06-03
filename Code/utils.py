@@ -3,7 +3,9 @@ import numpy as np
 import gzip
 import pickle
 from copy import deepcopy
-
+from torch.utils.tensorboard import SummaryWriter
+import torchvision
+import time
 ########################################################################################################################
 def print_arguments(args):
     print('=' * 100)
@@ -95,7 +97,6 @@ def print_log_acc_bwt(args, acc, lss):
     avg_acc = np.mean(acc[acc.shape[0]-1,:])
     print ('ACC: {:5.4f}%'.format(avg_acc))
     print()
-    print()
 
     ucb_bwt = (acc[-1] - np.diag(acc)).mean()
     print ('BWT : {:5.2f}%'.format(ucb_bwt))
@@ -122,4 +123,12 @@ def print_log_acc_bwt(args, acc, lss):
     return avg_acc, ucb_bwt
 
 
+def tb_setup(images, labels, network, task):
 
+    log_dir = '../TensorBoards/ucb.task_{}'.format(task)
+    tb = SummaryWriter(log_dir=log_dir, comment='Test run')
+    grid = torchvision.utils.make_grid(images)
+    
+    tb.add_image('images', grid)
+#    tb.add_graph(deepcopy(network.state_dict()), images)
+    return tb

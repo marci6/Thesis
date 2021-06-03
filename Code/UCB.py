@@ -5,13 +5,14 @@ Created on Wed May 26 16:43:34 2021
 @author: MARCELLOCHIESA
 """
 
-import os, sys, time
+import os, time
 import numpy as np
 import copy
 import math
 import torch
 import torch.nn.functional as F
 from optimizer import BayesianSGD
+from utils import tb_setup
 
 
 class Appr(object):
@@ -54,7 +55,9 @@ class Appr(object):
         best_model = copy.deepcopy(self.model.state_dict())
         lr = self.init_lr
         patience = self.lr_patience
-
+        
+        # Set up TensorBoard
+        tb = tb_setup(xtrain, ytrain, self.model, t)
         # Loop epochs
         try:
             for e in range(self.nepochs):
@@ -64,7 +67,23 @@ class Appr(object):
                 clock1=time.time()
                 train_loss,train_acc=self.eval(t,xtrain,ytrain)
                 clock2=time.time()
-
+                
+                # Update TensorBoard
+                tb.add_scalar('Loss', train_loss, e)
+                tb.add_scalar('Accuracy', train_acc, e)
+                
+#                tb.add_histogram('fc1.mu', self.model.fc1.weight_mu, e)
+#                tb.add_histogram('fc1.rho', self.model.fc1.weight_rho, e)
+#                tb.add_histogram('fc1.mu.grad', self.model.fc1.weight_mu.grad, e)
+#                tb.add_histogram('fc1.rho.grad', self.model.fc1.weight_rho.grad, e)
+                
+                for name, value in self.model.named_parameters():
+                    tb.add_histogram(name, value, e )
+                    if value.grad is None:
+                        pass
+                    else:
+                        tb.add_histogram('{}.grad'.format(name), value.grad, e)
+                
                 print('| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
                     1000*self.sbatch*(clock1-clock0)/xtrain.size(0),1000*self.sbatch*(clock2-clock1)/xtrain.size(0),
                     train_loss,100*train_acc),end='')
@@ -100,7 +119,9 @@ class Appr(object):
                 print()
         except KeyboardInterrupt:
             print()
-
+            
+        # Close TensorBoard
+        tb.close()
         # Restore best
         self.model.load_state_dict(copy.deepcopy(best_model))
         self.save_model(t)
