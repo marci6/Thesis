@@ -18,7 +18,7 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'mnist5'
+        self.experiment = 'cifar'
         self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
