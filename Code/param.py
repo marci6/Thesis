@@ -8,7 +8,7 @@ Created on Thu May 27 16:11:20 2021
 class Parameters:
     def __init__(self):
         self.device = 'cuda:0'
-        self.sbatch = 64
+        self.sbatch = 32
         self.lr = 0.01
         self.nlayers = 1
         self.nhid = 1200
@@ -18,7 +18,7 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'cifar'
+        self.experiment = 'omniglot'
         self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None

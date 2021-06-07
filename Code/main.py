@@ -48,13 +48,15 @@ elif args.experiment=='cifar':
     from dataloaders import cifar as dataloader
 elif args.experiment=='mixture':
     from dataloaders import mixture as dataloader
+elif args.experiment == 'omniglot':
+    from dataloaders import omniglot as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':
     import UCB as approach
 
 # Args -- Network
-if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5':
+if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot':
     import MLP as network
 else:
     import resnet_ucb as network
