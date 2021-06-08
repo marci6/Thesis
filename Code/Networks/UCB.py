@@ -61,7 +61,7 @@ class Appr(object):
         # Loop epochs
         try:
             for e in range(self.nepochs):
-                # Train step
+                # Train step ###############################
                 clock0=time.time()
                 self.train_epoch(t,xtrain,ytrain)
                 clock1=time.time()

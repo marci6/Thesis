@@ -6,7 +6,7 @@ Created on Wed May 26 14:45:48 2021
 """
 import torch
 import numpy as np
-from FC import BayesianLinear
+from .FC import BayesianLinear
 
 class BayesianMLP(torch.nn.Module):
     

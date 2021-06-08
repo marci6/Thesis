@@ -12,6 +12,7 @@ import utils
 from datetime import datetime
 from param import Parameters
 
+#torch.cuda.empty_cache()
 
 tstart=time.time()
 
@@ -53,13 +54,17 @@ elif args.experiment == 'omniglot':
 
 # Args -- Approach
 if args.approach =='ucb':
-    import UCB as approach
-
-# Args -- Network
-if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot':
-    import MLP as network
-else:
-    import resnet_ucb as network
+    from Networks import UCB as approach
+    # Args -- Network
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot':
+        from Networks import MLP as network
+    else:
+        from Networks import resnet_ucb as network
+elif args.approach =='ord':
+    from Ordinary import ordinary as approach
+    # Args -- Network
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot':
+        from Ordinary import MLP as network
 
 ########################################################################################################################
 print()
@@ -99,6 +104,9 @@ else:
 acc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
 lss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
 for t,ncla in taskcla[args.sti:]:
+    # Free cache
+#    torch.cuda.empty_cache()
+    
     print('*'*100)
     print('Task {:2d} ({:s})'.format(t,data[t]['name']))
     print('*'*100)
@@ -127,10 +135,10 @@ for t,ncla in taskcla[args.sti:]:
             task=[task_t,task_v]
     else:
         # Get data
-        xtrain=data[t]['train']['x'].to(args.device)
-        ytrain=data[t]['train']['y'].to(args.device)
-        xvalid=data[t]['valid']['x'].to(args.device)
-        yvalid=data[t]['valid']['y'].to(args.device)
+        xtrain=data[t]['train']['x']
+        ytrain=data[t]['train']['y']
+        xvalid=data[t]['valid']['x']
+        yvalid=data[t]['valid']['y']#.to(args.device)
         task=t
 
     # Train
