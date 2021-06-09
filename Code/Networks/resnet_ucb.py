@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from BayesianConvs import BayesianConv2D
-from BatchNorm import BayesianBatchNorm2d
-from FC import BayesianLinear
+from .BayesianConvs import BayesianConv2D
+from .BatchNorm import BayesianBatchNorm2d
+from .FC import BayesianLinear
 
 
 

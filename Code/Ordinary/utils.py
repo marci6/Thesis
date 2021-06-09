@@ -123,9 +123,9 @@ def print_log_acc_bwt(args, acc, lss):
     return avg_acc, ucb_bwt
 
 
-def tb_setup(images, labels, network, task):
+def tb_setup(images, labels, network, approach, task):
 
-    log_dir = '../TensorBoards/ucb.task_{}'.format(task)
+    log_dir = '../TensorBoards/{}/task_{}'.format(approach,task)
     tb = SummaryWriter(log_dir=log_dir, comment='Test run')
     grid = torchvision.utils.make_grid(images)
     

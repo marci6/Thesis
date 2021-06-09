@@ -56,7 +56,7 @@ class Appr(object):
         patience = self.lr_patience
         
         # Set up TensorBoard
-        tb = tb_setup(xtrain, ytrain, self.model, t)
+        tb = tb_setup(xtrain, ytrain, self.model, 'ordinary',t)
         # Loop epochs
         try:
             for e in range(self.nepochs):

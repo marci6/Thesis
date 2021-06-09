@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from distributions import VariationalPosterior, Prior
+from .distributions import VariationalPosterior, Prior
 import math
 
 

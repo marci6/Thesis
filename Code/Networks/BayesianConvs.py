@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.utils import _pair
 
-from distributions import VariationalPosterior, Prior
+from .distributions import VariationalPosterior, Prior
 
 
 

@@ -37,7 +37,6 @@ checkpoint = utils.make_directories(args)
 args.checkpoint = checkpoint
 print()
 
-
 # Args -- Experiment
 if args.experiment=='mnist2':
     from dataloaders import mnist2 as dataloader
