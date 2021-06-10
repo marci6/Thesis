@@ -1,4 +1,4 @@
 data/
-Tensorboard/
-checkpoints/
+**/Tensorboard/
+**/checkpoints/
 runs/
