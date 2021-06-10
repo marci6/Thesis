@@ -50,6 +50,8 @@ elif args.experiment=='mixture':
     from dataloaders import mixture as dataloader
 elif args.experiment == 'omniglot':
     from dataloaders import omniglot as dataloader
+elif args.experiment == 'fmnist':
+    from dataloaders import fmnist as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':
@@ -85,12 +87,12 @@ print('Printing current model...')
 print(model)
 print()
 
-print('-'*50)
+print('-'*20)
 appr=approach.Appr(model,args=args)
-print('-'*50)
+print('-'*20)
 
 args.output=os.path.join(args.results_path, datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
-print('-'*50)
+print('-'*20)
 
 if args.resume == 'yes':
     checkpoint = torch.load(os.path.join(args.checkpoint, 'model_{}.pth.tar'.format(args.sti)))
@@ -106,9 +108,9 @@ for t,ncla in taskcla[args.sti:]:
     # Free cache
 #    torch.cuda.empty_cache()
     
-    print('*'*100)
+    print('*'*20)
     print('Task {:2d} ({:s})'.format(t,data[t]['name']))
-    print('*'*100)
+    print('*'*20)
 
     if args.approach == 'joint':
         # Get data. We do not put it to GPU

@@ -18,12 +18,12 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'cifar'
+        self.experiment = 'fmnist'
         self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 1
+        self.nepochs = 10
         self.resume = 'no'
         self.arch = 'mlp'
         self.num_tasks = 1
@@ -32,3 +32,4 @@ class Parameters:
         self.checkpoint = None
         self.results_path = '../results/'
         self.output = ''
+        self.head = 'multi'

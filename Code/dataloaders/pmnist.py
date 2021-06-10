@@ -7,7 +7,7 @@ from sklearn.utils import shuffle
 
 ########################################################################################################################
 
-def get(seed=0, fixed_order=False, pc_valid=0):
+def get(data_path, seed=0, fixed_order=False, pc_valid=0):
     data = {}
     taskcla = []
     size = [1, 28, 28]

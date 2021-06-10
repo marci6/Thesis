@@ -72,11 +72,6 @@ class Appr(object):
                 tb.add_scalar('Loss', train_loss, e)
                 tb.add_scalar('Accuracy', train_acc, e)
                 
-#                tb.add_histogram('fc1.mu', self.model.fc1.weight_mu, e)
-#                tb.add_histogram('fc1.rho', self.model.fc1.weight_rho, e)
-#                tb.add_histogram('fc1.mu.grad', self.model.fc1.weight_mu.grad, e)
-#                tb.add_histogram('fc1.rho.grad', self.model.fc1.weight_rho.grad, e)
-                
                 for name, value in self.model.named_parameters():
                     tb.add_histogram(name, value, e )
                     if value.grad is None:
