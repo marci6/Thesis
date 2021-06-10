@@ -1,0 +1,4 @@
+data/
+Tensorboard/
+checkpoints/
+runs/
