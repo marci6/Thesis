@@ -2,10 +2,10 @@ import os
 import numpy as np
 import gzip
 import pickle
+import torch
 from copy import deepcopy
 from torch.utils.tensorboard import SummaryWriter
 import torchvision
-import time
 ########################################################################################################################
 def print_arguments(args):
     print('=' * 100)
@@ -132,3 +132,14 @@ def tb_setup(images, labels, network, approach, task):
     tb.add_image('images', grid)
 #    tb.add_graph(deepcopy(network.state_dict()), images)
     return tb
+
+def quantize(model, dtype):
+    qmodel = torch.quantization.quantize_dynamic(model, dtype=dtype)
+    return qmodel
+
+def print_size_of_model(model, label=""):
+    torch.save(model.state_dict(), "temp.p")
+    size=os.path.getsize("temp.p")
+    print("model: ",label,' \t','Size (KB):', size/1e3)
+    os.remove('temp.p')
+    return size

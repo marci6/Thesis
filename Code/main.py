@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May 27 16:08:36 2021
-
-@author: MARCELLOCHIESA
-"""
 import os
 import time
 import numpy as np
@@ -52,19 +46,23 @@ elif args.experiment == 'omniglot':
     from dataloaders import omniglot as dataloader
 elif args.experiment == 'fmnist':
     from dataloaders import fmnist as dataloader
+elif args.experiment == 'easymix':
+    from dataloaders import easymix as dataloader
+elif args.experiment == 'SVHN':
+    from dataloaders import SVHN as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':
     from Networks import UCB as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot':
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN':
         from Networks import MLP as network
     else:
         from Networks import resnet_ucb as network
 elif args.approach =='ord':
     from Ordinary import ordinary as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot':
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN':
         from Ordinary import MLP as network
 
 ########################################################################################################################
@@ -136,10 +134,10 @@ for t,ncla in taskcla[args.sti:]:
             task=[task_t,task_v]
     else:
         # Get data
-        xtrain=data[t]['train']['x']
-        ytrain=data[t]['train']['y']
-        xvalid=data[t]['valid']['x']
-        yvalid=data[t]['valid']['y']#.to(args.device)
+        xtrain=data[t]['train']['x'].to(args.device)
+        ytrain=data[t]['train']['y'].to(args.device)
+        xvalid=data[t]['valid']['x'].to(args.device)
+        yvalid=data[t]['valid']['y'].to(args.device)
         task=t
 
     # Train
@@ -163,3 +161,18 @@ for t,ncla in taskcla[args.sti:]:
 utils.print_log_acc_bwt(args, acc, lss)
 print('[Elapsed time = {:.1f} h]'.format((time.time()-tstart)/(60*60)))
 
+if args.save_model:
+    PATH = os.path.join(args.save_path,'{}_{}/'.format(args.experiment,args.approach))
+    if not os.path.isdir(PATH):
+        os.makedirs(PATH)
+    torch.save(model.state_dict(), PATH)
+
+############ QUANTIZE ###############################################################################
+#%%
+print()
+utils.print_size_of_model(model)
+
+qmodel = utils.quantize(model, torch.qint8)
+
+print()
+utils.print_size_of_model(qmodel)

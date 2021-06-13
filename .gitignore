@@ -2,3 +2,4 @@ data/
 TensorBoards/
 checkpoints/
 runs/
+saved_models/
