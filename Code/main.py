@@ -164,11 +164,45 @@ if args.save_model:
     torch.save(model.state_dict(), PATH)
 
 ############ QUANTIZE ###############################################################################
+
+print()
+pre_size = utils.print_size_of_model(model)
+
+qmodel = utils.quantize(model.to('cpu'), torch.qint8)
+
+print()
+post_size = utils.print_size_of_model(qmodel)
+
+print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
+
+################ CHECK ACCURACY #############################################
 #%%
-print()
-utils.print_size_of_model(model)
+qacc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
+qlss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
+appr.model = qmodel
+if args.device == 'cuda:0':
+    appr.device = 'cpu'
+    # Test model on all previous tasks, after learning current task
+    for t,ncla in taskcla[args.sti:]:
+        for u in range(t+1):
+            xtest=data[u]['test']['x'].to(args.device)
+            ytest=data[u]['test']['y'].to(args.device)
+            test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
+            qacc[t,u]=test_acc
+            qlss[t,u]=test_loss
+            
+    utils.print_log_acc_bwt(args, qacc, qlss)
+    appr.device = 'cuda:0'
+else:
+    # Test model on all previous tasks, after learning current task
+    for t,ncla in taskcla[args.sti:]:
+        for u in range(t+1):
+            xtest=data[u]['test']['x'].to(args.device)
+            ytest=data[u]['test']['y'].to(args.device)
+            test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
+            qacc[t,u]=test_acc
+            qlss[t,u]=test_loss
+            
+    utils.print_log_acc_bwt(args, qacc, qlss)
 
-qmodel = utils.quantize(model, torch.qint8)
 
-print()
-utils.print_size_of_model(qmodel)

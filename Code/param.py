@@ -7,7 +7,7 @@ Created on Thu May 27 16:11:20 2021
 
 class Parameters:
     def __init__(self):
-        self.device = 'cpu'
+        self.device = 'cuda:0'
         self.sbatch = 64
         self.lr = 0.01
         self.nlayers = 1
