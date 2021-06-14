@@ -6,8 +6,6 @@ import utils
 from datetime import datetime
 from param import Parameters
 
-#torch.cuda.empty_cache()
-
 tstart=time.time()
 
 # Arguments
@@ -103,8 +101,6 @@ else:
 acc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
 lss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
 for t,ncla in taskcla[args.sti:]:
-    # Free cache
-#    torch.cuda.empty_cache()
     
     print('*'*20)
     print('Task {:2d} ({:s})'.format(t,data[t]['name']))

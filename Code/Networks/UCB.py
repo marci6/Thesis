@@ -239,7 +239,7 @@ class Appr(object):
                 if i+self.sbatch<=len(r): b=r[i:i+self.sbatch]
                 else: b=r[i:]
                 images, targets = x[b].to(self.device), y[b].to(self.device)
-
+                
                 # Forward
                 outputs=self.model(images,sample=False)
                 # pick output number t

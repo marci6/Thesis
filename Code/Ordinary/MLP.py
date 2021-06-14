@@ -23,10 +23,10 @@ class MLP(nn.Module):
         # dim=60  #100k
         # dim=1200
         dim=args.nhid
-        nlayers=args.nlayers
+        self.nlayers=args.nlayers
     
         self.fc1 = nn.Linear(ncha*size*size, 2*dim)
-        if nlayers==2:
+        if self.nlayers==2:
             self.fc2 = nn.Linear(2*dim, 2*dim)
     
         self.classifier = torch.nn.ModuleList()
@@ -38,6 +38,8 @@ class MLP(nn.Module):
     '''Forward pass'''
     x = x.view(x.size(0),-1)
     x = torch.nn.functional.relu(self.fc1(x))
+    if self.nlayers==2:
+        x = torch.nn.functional.relu(self.fc2(x))
     y=[]
     for t,i in self.taskcla:
         y.append(self.classifier[t](x))

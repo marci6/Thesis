@@ -5,6 +5,7 @@ import pickle
 import torch
 from copy import deepcopy
 from torch.utils.tensorboard import SummaryWriter
+
 import torchvision
 ########################################################################################################################
 def print_arguments(args):
@@ -134,7 +135,7 @@ def tb_setup(images, labels, network, approach, task):
     return tb
 
 def quantize(model, dtype):
-    qmodel = torch.quantization.quantize_dynamic(model, dtype=dtype)
+    qmodel = torch.quantization.quantize_dynamic(model, {torch.nn.Linear},dtype=dtype)
     return qmodel
 
 def print_size_of_model(model, label=""):

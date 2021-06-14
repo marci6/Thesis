@@ -161,10 +161,10 @@ class Appr(object):
             loss = torch.nn.functional.nll_loss(predictions, targets).to(device=self.device)
 
             # Backward
-            self.model.cuda()
+            # self.model.cuda()
             self.optimizer.zero_grad()
             loss.backward(retain_graph=True)
-            self.model.cuda()
+            # self.model.cuda()
 
             # Update parameters
             self.optimizer.step()
