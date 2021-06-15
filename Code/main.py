@@ -58,7 +58,10 @@ if args.approach =='ucb':
     else:
         from Networks import resnet_ucb as network
 elif args.approach =='ord':
-    from Ordinary import ordinary as approach
+    if args.qat:
+        from Ordinary import ord_qat as approach
+    else:
+        from Ordinary import ordinary as approach
     # Args -- Network
     if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN':
         from Ordinary import MLP as network
@@ -138,7 +141,7 @@ for t,ncla in taskcla[args.sti:]:
 
     # Train
     appr.train(task,xtrain,ytrain,xvalid,yvalid)
-    print('-'*50)
+    print('-'*20)
 
     # Test model on all previous tasks, after learning current task
     for u in range(t+1):
@@ -164,45 +167,44 @@ if args.save_model:
     torch.save(model.state_dict(), PATH)
 
 ############ QUANTIZE ###############################################################################
-
-print()
-pre_size = utils.print_size_of_model(model)
-
-qmodel = utils.quantize(model.to('cpu'), torch.qint8)
-
-print()
-post_size = utils.print_size_of_model(qmodel)
-
-print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
+if args.qat is False:
+    print()
+    pre_size = utils.print_size_of_model(model)
+    
+    qmodel = utils.quantize(model.to('cpu'), torch.qint8)
+    
+    print()
+    post_size = utils.print_size_of_model(qmodel)
+    
+    print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
 
 ################ CHECK ACCURACY #############################################
-#%%
-qacc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
-qlss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
-appr.model = qmodel
-if args.device == 'cuda:0':
-    appr.device = 'cpu'
-    # Test model on all previous tasks, after learning current task
-    for t,ncla in taskcla[args.sti:]:
-        for u in range(t+1):
-            xtest=data[u]['test']['x'].to(args.device)
-            ytest=data[u]['test']['y'].to(args.device)
-            test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
-            qacc[t,u]=test_acc
-            qlss[t,u]=test_loss
-            
-    utils.print_log_acc_bwt(args, qacc, qlss)
-    appr.device = 'cuda:0'
-else:
-    # Test model on all previous tasks, after learning current task
-    for t,ncla in taskcla[args.sti:]:
-        for u in range(t+1):
-            xtest=data[u]['test']['x'].to(args.device)
-            ytest=data[u]['test']['y'].to(args.device)
-            test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
-            qacc[t,u]=test_acc
-            qlss[t,u]=test_loss
-            
-    utils.print_log_acc_bwt(args, qacc, qlss)
+    qacc=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
+    qlss=np.zeros((len(taskcla),len(taskcla)),dtype=np.float32)
+    appr.model = qmodel
+    if args.device == 'cuda:0':
+        appr.device = 'cpu'
+        # Test model on all previous tasks, after learning current task
+        for t,ncla in taskcla[args.sti:]:
+            for u in range(t+1):
+                xtest=data[u]['test']['x'].to(args.device)
+                ytest=data[u]['test']['y'].to(args.device)
+                test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
+                qacc[t,u]=test_acc
+                qlss[t,u]=test_loss
+                
+        utils.print_log_acc_bwt(args, qacc, qlss)
+        appr.device = 'cuda:0'
+    else:
+        # Test model on all previous tasks, after learning current task
+        for t,ncla in taskcla[args.sti:]:
+            for u in range(t+1):
+                xtest=data[u]['test']['x'].to(args.device)
+                ytest=data[u]['test']['y'].to(args.device)
+                test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
+                qacc[t,u]=test_acc
+                qlss[t,u]=test_loss
+                
+        utils.print_log_acc_bwt(args, qacc, qlss)
 
 

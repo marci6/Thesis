@@ -7,7 +7,7 @@ Created on Thu May 27 16:11:20 2021
 
 class Parameters:
     def __init__(self):
-        self.device = 'cuda:0'
+        self.device = 'cpu'
         self.sbatch = 64
         self.lr = 0.01
         self.nlayers = 1
@@ -35,3 +35,4 @@ class Parameters:
         self.results_path = '../results/'
         self.output = ''
         self.head = 'multi'
+        self.qat = True
