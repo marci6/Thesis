@@ -44,9 +44,15 @@ class Appr(object):
 
     def train(self,t,xtrain,ytrain,xvalid,yvalid):
 
-        # Update the next learning rate for each parameter based on their uncertainty
+        self.model.train()
+        # attach a global qconfig, which contains information about what kind
+        # of observers to attach.
+        if t==0:
+            self.model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')
+            self.model_qat = torch.quantization.prepare_qat(self.model, inplace=False)
+        # Set optimizer
         params_dict = []
-        params_dict.append({'params': self.model.parameters(), 'lr': self.init_lr})
+        params_dict.append({'params': self.model_qat.parameters(), 'lr': self.init_lr})
         self.optimizer = torch.optim.Adam(params_dict, lr=self.init_lr)
         best_loss=np.inf
 
@@ -58,12 +64,6 @@ class Appr(object):
         # Set up TensorBoard
         tb = tb_setup(xtrain, ytrain, self.model, 'ordinary',t)
         
-        self.model.train()
-        # attach a global qconfig, which contains information about what kind
-        # of observers to attach.
-        if t==0:
-            self.model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')
-            self.model_qat = torch.quantization.prepare_qat(self.model, inplace=False)
         # Loop epochs
         try:
             for e in range(self.nepochs):
@@ -79,11 +79,6 @@ class Appr(object):
                 # Update TensorBoard
                 tb.add_scalar('Loss', train_loss, e)
                 tb.add_scalar('Accuracy', train_acc, e)
-                
-#                tb.add_histogram('fc1.mu', self.model.fc1.weight_mu, e)
-#                tb.add_histogram('fc1.rho', self.model.fc1.weight_rho, e)
-#                tb.add_histogram('fc1.mu.grad', self.model.fc1.weight_mu.grad, e)
-#                tb.add_histogram('fc1.rho.grad', self.model.fc1.weight_rho.grad, e)
                 
                 for name, value in self.model.named_parameters():
                     tb.add_histogram(name, value, e )
@@ -107,7 +102,7 @@ class Appr(object):
                 if valid_loss<best_loss:
                     # save best loss and best model
                     best_loss=valid_loss
-                    best_model=copy.deepcopy(self.model.state_dict())
+                    best_model=copy.deepcopy(self.model_qat.state_dict())
                     patience=self.lr_patience
                     print(' *',end='')
                 else:
@@ -173,7 +168,7 @@ class Appr(object):
             # Forward
             predictions = self.model_qat(images)[t]
             # Compute loss
-            loss = torch.nn.functional.nll_loss(predictions, targets).to(device=self.device)
+            loss = torch.nn.functional.nll_loss(predictions, targets).to(self.device)
 
             # Backward
             # self.model.cuda()

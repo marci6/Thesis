@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 26 16:43:34 2021
+Created on Wed Jun 16 14:01:05 2021
 
 @author: MARCELLOCHIESA
 """
@@ -58,6 +58,12 @@ class Appr(object):
         
         # Set up TensorBoard
         tb = tb_setup(xtrain, ytrain, self.model,'ucb', t)
+        self.model.train()
+        # attach a global qconfig, which contains information about what kind
+        # of observers to attach.
+        if t==0:
+            self.model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')
+            self.model_qat = torch.quantization.prepare_qat(self.model, inplace=True)
         # Loop epochs
         try:
             for e in range(self.nepochs):
@@ -115,11 +121,13 @@ class Appr(object):
         except KeyboardInterrupt:
             print()
             
+        if t==self.num_tasks-1:
+            self.model = torch.quantization.convert(self.model_qat.eval(), inplace=True)
         # Close TensorBoard
         tb.close()
         # Restore best
-        self.model.load_state_dict(copy.deepcopy(best_model))
-        self.save_model(t)
+        # self.model.load_state_dict(copy.deepcopy(best_model))
+        # self.save_model(t)
 
 
 

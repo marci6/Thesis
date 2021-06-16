@@ -23,6 +23,8 @@ if torch.cuda.is_available():
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
+if args.qat:
+    torch.backends.quantized.engine = 'fbgemm'
 
 print('Using device:', args.device)
 checkpoint = utils.make_directories(args)
@@ -51,10 +53,16 @@ elif args.experiment == 'SVHN':
 
 # Args -- Approach
 if args.approach =='ucb':
-    from Networks import UCB as approach
+    if args.qat:
+        from Networks import UCB_qat as approach
+    else:
+        from Networks import UCB as approach
     # Args -- Network
     if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN':
-        from Networks import MLP as network
+        if args.qat:
+            from Networks import MLP_quantized as network
+        else:
+            from Networks import MLP as network
     else:
         from Networks import resnet_ucb as network
 elif args.approach =='ord':
@@ -141,6 +149,7 @@ for t,ncla in taskcla[args.sti:]:
 
     # Train
     appr.train(task,xtrain,ytrain,xvalid,yvalid)
+    model = appr.model
     print('-'*20)
 
     # Test model on all previous tasks, after learning current task
@@ -166,10 +175,11 @@ if args.save_model:
         os.makedirs(PATH)
     torch.save(model.state_dict(), PATH)
 
+print()
+pre_size = utils.print_size_of_model(model)
 ############ QUANTIZE ###############################################################################
-if args.qat is False:
-    print()
-    pre_size = utils.print_size_of_model(model)
+#%%
+if args.qat is False and args.approach == 'ord':
     
     qmodel = utils.quantize(model.to('cpu'), torch.qint8)
     

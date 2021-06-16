@@ -50,8 +50,9 @@ class MLP(nn.Module):
     if self.qat:
         for t,i in self.taskcla:
             xx = self.classifier[t](x)
+            xx = torch.nn.functional.log_softmax(xx, dim=1)
             y.append(self.dequant(xx))
-        return [torch.nn.functional.log_softmax(yy, dim=1) for yy in y]
+        return y
     else:
         for t,i in self.taskcla:
             y.append(self.classifier[t](x))
