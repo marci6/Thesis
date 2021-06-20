@@ -87,7 +87,7 @@ class Appr(object):
                     else:
                         tb.add_histogram('{}.grad'.format(name), value.grad, e)
                 
-                print('| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
+                print('\n| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
                     1000*self.sbatch*(clock1-clock0)/xtrain.size(0),1000*self.sbatch*(clock2-clock1)/xtrain.size(0),
                     train_loss,100*train_acc),end='')
                 # Valid accuracy
@@ -126,8 +126,8 @@ class Appr(object):
         # quantizes the weights, computes and stores the scale and bias value to be
         # used with each activation tensor, fuses modules where appropriate,
         # and replaces key operators with quantized implementations.
-        if t==self.num_tasks-1:
-            self.model = torch.quantization.convert(self.model_qat.eval(), inplace=False)
+        # if t==self.num_tasks-1:
+        #     self.model = torch.quantization.convert(self.model_qat.eval(), inplace=False)
         # Close TensorBoard
         tb.close()
         # Restore best

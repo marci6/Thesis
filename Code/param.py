@@ -7,7 +7,7 @@ Created on Thu May 27 16:11:20 2021
 
 class Parameters:
     def __init__(self):
-        self.device = 'cpu'
+        self.device = 'cuda:0'
         self.sbatch = 64
         self.lr = 0.01
         self.nlayers = 1
@@ -18,14 +18,14 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'mnist2'
+        self.experiment = 'mnist5'
         self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 1
+        self.nepochs = 2
         self.resume = 'no'
-        self.save_model = False
+        self.save_model = True
         self.save_path = '../saved_models/'
         self.arch = 'mlp'
         self.num_tasks = 1
@@ -36,3 +36,4 @@ class Parameters:
         self.output = ''
         self.head = 'multi'
         self.qat = True
+        self.dynamic = False

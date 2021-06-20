@@ -85,7 +85,7 @@ class Appr(object):
                     else:
                         tb.add_histogram('{}.grad'.format(name), value.grad, e)
                 
-                print('| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
+                print('\n| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
                     1000*self.sbatch*(clock1-clock0)/xtrain.size(0),1000*self.sbatch*(clock2-clock1)/xtrain.size(0),
                     train_loss,100*train_acc),end='')
                 # Valid accuracy
@@ -121,8 +121,9 @@ class Appr(object):
         except KeyboardInterrupt:
             print()
             
-        if t==self.num_tasks-1:
-            self.model = torch.quantization.convert(self.model_qat.eval(), inplace=True)
+        # Define quantized model 
+        # if t==self.num_tasks-1:
+        #     self.model = torch.quantization.convert(self.model_qat.eval(), inplace=True)
         # Close TensorBoard
         tb.close()
         # Restore best

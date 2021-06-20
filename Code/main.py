@@ -149,7 +149,6 @@ for t,ncla in taskcla[args.sti:]:
 
     # Train
     appr.train(task,xtrain,ytrain,xvalid,yvalid)
-    model = appr.model
     print('-'*20)
 
     # Test model on all previous tasks, after learning current task
@@ -162,24 +161,33 @@ for t,ncla in taskcla[args.sti:]:
         lss[t,u]=test_loss
 
     # Save
-    print('Save at '+args.checkpoint)
+    print('Save at ' + args.checkpoint)
     np.savetxt(os.path.join(args.checkpoint,'{}_{}_{}.txt'.format(args.experiment,args.approach,args.seed)),acc,'%.5f')
 
 
 utils.print_log_acc_bwt(args, acc, lss)
 print('[Elapsed time = {:.1f} h]'.format((time.time()-tstart)/(60*60)))
-
-if args.save_model:
-    PATH = os.path.join(args.save_path,'{}_{}/'.format(args.experiment,args.approach))
-    if not os.path.isdir(PATH):
-        os.makedirs(PATH)
-    torch.save(model.state_dict(), PATH)
-
-print()
-pre_size = utils.print_size_of_model(model)
-############ QUANTIZE ###############################################################################
 #%%
-if args.qat is False and args.approach == 'ord':
+print('Pre quantization')
+pre_size = utils.print_size_of_model(model)
+
+if args.qat:
+    model = torch.quantization.convert(appr.model_qat.eval().to('cpu'), inplace=True)
+
+#%%
+if args.save_model:
+    PATH = os.path.join(args.save_path,'{}_{}.p'.format(args.experiment,args.approach))
+    if not os.path.isdir(args.save_path):
+        os.makedirs(PATH)
+    if not os.path.exists(checkpoint):
+        os.mkdir(PATH)
+    torch.save(model.state_dict(), PATH)
+#%%
+print('Post quantization')
+post_size = utils.print_size_of_model(model)
+print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
+############ QUANTIZE ###############################################################################
+if args.dynamic:
     
     qmodel = utils.quantize(model.to('cpu'), torch.qint8)
     

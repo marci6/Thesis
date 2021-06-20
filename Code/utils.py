@@ -79,7 +79,7 @@ def make_directories(args):
     checkpoint = os.path.join(args.checkpoint_dir, args.output)
     if not os.path.exists(args.checkpoint_dir):
         os.mkdir(args.checkpoint_dir)
-    if not os.path.exists(checkpoint):os.mkdir(checkpoint)
+    if not os.path.exists(checkpoint): os.mkdir(checkpoint)
     print("Results will be saved in ", checkpoint)
 
     return checkpoint
