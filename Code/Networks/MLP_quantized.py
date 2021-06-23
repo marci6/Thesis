@@ -24,8 +24,6 @@ class BayesianMLP(torch.nn.Module):
         self.quant = torch.quantization.QuantStub()
         # DeQuantStub converts tensors from quantized to floating point
         self.dequant = torch.quantization.DeQuantStub()
-        # dim=60  #100k
-        # dim=1200
         dim=args.nhid
         nlayers=args.nlayers
 

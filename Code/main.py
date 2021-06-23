@@ -176,7 +176,7 @@ if args.qat:
 
 #%%
 if args.save_model:
-    PATH = os.path.join(args.save_path,'{}_{}.p'.format(args.experiment,args.approach))
+    PATH = os.path.join(args.save_path,'{}_{}'.format(args.experiment,args.approach))
     if not os.path.isdir(args.save_path):
         os.makedirs(PATH)
     if not os.path.exists(checkpoint):
