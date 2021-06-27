@@ -45,8 +45,8 @@ class BayesianMLP(torch.nn.Module):
 
 
     def forward(self, x, sample=False):
-        x = x.view(x.size(0),-1)
         x = self.quant(x)
+        x = x.view(x.size(0),-1)
         x = torch.nn.functional.relu(self.fc1(x, sample))
         y=[]
         if self.head == 'multi':

@@ -18,12 +18,12 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'easymix'
+        self.experiment = 'SVHN'
         self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 2
+        self.nepochs = 1
         self.resume = 'no'
         self.save_model = False
         self.save_path = '../saved_models/'

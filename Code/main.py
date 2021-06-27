@@ -50,6 +50,8 @@ elif args.experiment == 'easymix':
     from dataloaders import easymix as dataloader
 elif args.experiment == 'SVHN':
     from dataloaders import SVHN as dataloader
+elif args.experiment == 'mnistm':
+    from dataloaders import mnistm as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':
@@ -58,7 +60,7 @@ if args.approach =='ucb':
     else:
         from Networks import UCB as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN':
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN':
         if args.qat:
             from Networks import MLP_quantized as network
         else:
@@ -71,7 +73,7 @@ elif args.approach =='ord':
     else:
         from Ordinary import ordinary as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN':
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN' or args.experiment == 'mnistm':
         from Ordinary import MLP as network
 
 ########################################################################################################################

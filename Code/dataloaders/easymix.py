@@ -69,7 +69,8 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                 for s in ['train','test']:
                     loader = torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
                     data[n][s] = {'x': [], 'y': []}
-                    for image, target in loader:
+                    for sample, target in loader:
+                        image = torch.mean(sample[0], dim = 0).unsqueeze(0)
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0]-1)
 

@@ -12,12 +12,12 @@ from torchvision import datasets,transforms
 
 ########################################################################################################################
 
-# MNIST divided into 5 sets.
+# SVHN divided into 5 sets.
 
 def get(data_path,seed,fixed_order=False,pc_valid=0):
     data={}
     taskcla=[]
-    size=[1,32,32]
+    size=[3,32,32]
 
     # MNIST
     mean=(0.4514,)
@@ -48,40 +48,40 @@ def get(data_path,seed,fixed_order=False,pc_valid=0):
         data[3][s]={'x': [],'y': []}
         data[4][s]={'x': [],'y': []}
         for image,target in loader:
-            label=target.numpy()
-            image = np.average(image, axis = 0)
+            label=target.numpy()-1
+            # image = torch.mean(sample[0], dim = 0)
             if label==0:
                 data[0][s]['x'].append(image)
                 data[0][s]['y'].append(0)
-            if label==1:
+            elif label==1:
                 data[0][s]['x'].append(image)
                 data[0][s]['y'].append(1)
-
-            if label==2:
+                
+            elif label==2:
                 data[1][s]['x'].append(image)
                 data[1][s]['y'].append(0)
-            if label==3:
+            elif label==3:
                 data[1][s]['x'].append(image)
                 data[1][s]['y'].append(1)
 
-            if label==4:
+            elif label==4:
                 data[2][s]['x'].append(image)
                 data[2][s]['y'].append(0)
-            if label==5:
+            elif label==5:
                 data[2][s]['x'].append(image)
                 data[2][s]['y'].append(1)
 
-            if label==6:
+            elif label==6:
                 data[3][s]['x'].append(image)
                 data[3][s]['y'].append(0)
-            if label==7:
+            elif label==7:
                 data[3][s]['x'].append(image)
                 data[3][s]['y'].append(1)
 
-            if label==8:
+            elif label==8:
                 data[4][s]['x'].append(image)
                 data[4][s]['y'].append(0)
-            if label==9:
+            elif label==9:
                 data[4][s]['x'].append(image)
                 data[4][s]['y'].append(1)
 
