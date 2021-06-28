@@ -50,8 +50,12 @@ elif args.experiment == 'easymix':
     from dataloaders import easymix as dataloader
 elif args.experiment == 'SVHN':
     from dataloaders import SVHN as dataloader
+elif args.experiment == 'cSVHN':
+    from dataloaders import SVHN_complete as dataloader
 elif args.experiment == 'mnistm':
     from dataloaders import mnistm as dataloader
+elif args.experiment == 'cifar10':
+    from dataloaders import cifar10 as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':
@@ -60,7 +64,7 @@ if args.approach =='ucb':
     else:
         from Networks import UCB as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN':
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar10':
         if args.qat:
             from Networks import MLP_quantized as network
         else:
@@ -73,7 +77,7 @@ elif args.approach =='ord':
     else:
         from Ordinary import ordinary as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'SVHN' or args.experiment == 'mnistm':
+    if args.experiment=='mnist2' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar10':
         from Ordinary import MLP as network
 
 ########################################################################################################################
@@ -97,7 +101,7 @@ print(model)
 print()
 
 print('-'*20)
-appr=approach.Appr(model,args=args)
+appr = approach.Appr(model,args=args)
 print('-'*20)
 
 args.output=os.path.join(args.results_path, datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
@@ -151,6 +155,7 @@ for t,ncla in taskcla[args.sti:]:
 
     # Train
     appr.train(task,xtrain,ytrain,xvalid,yvalid)
+    model = appr.model
     print('-'*20)
 
     # Test model on all previous tasks, after learning current task
@@ -170,13 +175,15 @@ for t,ncla in taskcla[args.sti:]:
 utils.print_log_acc_bwt(args, acc, lss)
 print('[Elapsed time = {:.1f} h]'.format((time.time()-tstart)/(60*60)))
 #%%
-print('Pre quantization')
+print('\nPre quantization')
 pre_size = utils.print_size_of_model(model)
 
 if args.qat:
-    model = torch.quantization.convert(appr.model_qat.eval().to('cpu'), inplace=True)
+    torch.quantization.convert(model.eval().to('cpu'), inplace=True)
+    print('Post quantization')
+    post_size = utils.print_size_of_model(model)
+    print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
 
-#%%
 if args.save_model:
     PATH = os.path.join(args.save_path,'{}_{}'.format(args.experiment,args.approach))
     if not os.path.isdir(args.save_path):
@@ -184,10 +191,7 @@ if args.save_model:
     if not os.path.exists(checkpoint):
         os.mkdir(PATH)
     torch.save(model.state_dict(), PATH)
-#%%
-print('Post quantization')
-post_size = utils.print_size_of_model(model)
-print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
+
 ############ QUANTIZE ###############################################################################
 if args.dynamic:
     

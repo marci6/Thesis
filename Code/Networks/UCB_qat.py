@@ -63,15 +63,18 @@ class Appr(object):
         # of observers to attach.
         if t==0:
             self.model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')
-            self.model_qat = torch.quantization.prepare_qat(self.model, inplace=True)
+            torch.quantization.prepare_qat(self.model, inplace=True)
+            print('Model prepared for Fake Quantization')
         # Loop epochs
         try:
             for e in range(self.nepochs):
                 # Train step ###############################
                 clock0=time.time()
+                
                 self.train_epoch(t,xtrain,ytrain)
+                
                 clock1=time.time()
-                train_loss,train_acc=self.eval(t,xtrain,ytrain)
+                train_loss,train_acc = self.eval(t,xtrain,ytrain)
                 clock2=time.time()
                 
                 # Update TensorBoard
@@ -89,7 +92,7 @@ class Appr(object):
                     1000*self.sbatch*(clock1-clock0)/xtrain.size(0),1000*self.sbatch*(clock2-clock1)/xtrain.size(0),
                     train_loss,100*train_acc),end='')
                 # Valid accuracy
-                valid_loss,valid_acc=self.eval(t,xvalid,yvalid)
+                valid_loss,valid_acc = self.eval(t,xvalid,yvalid)
                 print(' Valid: loss={:.3f}, acc={:5.1f}% |'.format(valid_loss, 100 * valid_acc), end='')
 
                 if math.isnan(valid_loss) or math.isnan(train_loss):
@@ -123,7 +126,7 @@ class Appr(object):
             
         # Define quantized model 
         # if t==self.num_tasks-1:
-        #     self.model = torch.quantization.convert(self.model_qat.eval(), inplace=True)
+        #     self.model = torch.quantization.convert(self.model.eval(), inplace=True)
         # Close TensorBoard
         tb.close()
         # Restore best
@@ -210,7 +213,6 @@ class Appr(object):
         r=torch.LongTensor(r).to(self.device)
 
         num_batches = len(x)//self.sbatch
-#        j=0
         # Loop batches
         for i in range(0,len(r),self.sbatch):
             # b -> batch

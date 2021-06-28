@@ -7,7 +7,7 @@ Created on Thu May 27 16:11:20 2021
 
 class Parameters:
     def __init__(self):
-        self.device = 'cuda:0'
+        self.device = 'cuda'
         self.sbatch = 64
         self.lr = 0.01
         self.nlayers = 1
@@ -18,12 +18,12 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'SVHN'
+        self.experiment = 'cifar10'
         self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 1
+        self.nepochs = 2
         self.resume = 'no'
         self.save_model = False
         self.save_path = '../saved_models/'
