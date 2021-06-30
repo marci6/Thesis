@@ -23,7 +23,7 @@ class Parameters:
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 2
+        self.nepochs = 1
         self.resume = 'no'
         self.save_model = False
         self.save_path = '../saved_models/'

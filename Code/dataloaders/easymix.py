@@ -71,7 +71,7 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                     data[n][s] = {'x': [], 'y': []}
                     for sample, target in loader:
                         data[n][s]['x'].append(image)
-                        data[n][s]['y'].append(target.numpy()[0]-1)
+                        data[n][s]['y'].append(target.numpy()[0])
 
             elif idx == 2:
                 # FashionMNIST
