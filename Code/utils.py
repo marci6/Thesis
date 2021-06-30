@@ -100,7 +100,7 @@ def print_log_acc_bwt(args, acc, lss):
     print()
 
     ucb_bwt = (acc[-1] - np.diag(acc)).mean()
-    print ('BWT : {:5.2f}%'.format(ucb_bwt))
+    print ('BWT : {:5.4f}%'.format(ucb_bwt))
 
     print('*'*100)
     print('Done!')

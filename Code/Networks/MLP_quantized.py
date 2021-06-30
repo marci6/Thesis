@@ -45,18 +45,18 @@ class BayesianMLP(torch.nn.Module):
 
 
     def forward(self, x, sample=False):
-        x = self.quant(x)
-        x = x.view(x.size(0),-1)
-        x = torch.nn.functional.relu(self.fc1(x, sample))
+        xx = self.quant(x)
+        xx = xx.view(x.size(0),-1)
+        xx = torch.nn.functional.relu(self.fc1(xx, sample))
         y=[]
         if self.head == 'multi':
             for t,i in self.taskcla:
-                xx = self.classifier[t](x, sample)
-                xx = torch.nn.functional.log_softmax(xx, dim=1)
-                y.append(self.dequant(xx))
+                xxx = self.classifier[t](xx, sample)
+                xxx = torch.nn.functional.log_softmax(xxx, dim=1)
+                y.append(self.dequant(xxx))
             return y
         elif self.head == 'single':
-            y.append(self.classifier(x, sample))
+            y.append(self.classifier(xx, sample))
             return [torch.nn.functional.log_softmax(yy, dim=1) for yy in y]
 
 

@@ -56,6 +56,8 @@ elif args.experiment == 'mnistm':
     from dataloaders import mnistm as dataloader
 elif args.experiment == 'cifar10':
     from dataloaders import cifar10 as dataloader
+elif args.experiment == 'cifar5':
+    from dataloaders import cifar5 as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':
@@ -147,10 +149,10 @@ for t,ncla in taskcla[args.sti:]:
             task=[task_t,task_v]
     else:
         # Get data
-        xtrain=data[t]['train']['x'].to(args.device)
-        ytrain=data[t]['train']['y'].to(args.device)
-        xvalid=data[t]['valid']['x'].to(args.device)
-        yvalid=data[t]['valid']['y'].to(args.device)
+        xtrain=data[t]['train']['x']
+        ytrain=data[t]['train']['y']
+        xvalid=data[t]['valid']['x']
+        yvalid=data[t]['valid']['y']
         task=t
 
     # Train
@@ -182,7 +184,7 @@ if args.qat:
     torch.quantization.convert(model.eval().to('cpu'), inplace=True)
     print('Post quantization')
     post_size = utils.print_size_of_model(model)
-    print('\nQuantized model is X {:.1f} smaller'.format(pre_size/post_size))
+    print('\nQuantized model is X {:.3f} smaller'.format(pre_size/post_size))
 
 if args.save_model:
     PATH = os.path.join(args.save_path,'{}_{}'.format(args.experiment,args.approach))

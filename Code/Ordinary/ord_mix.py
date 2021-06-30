@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun 15 15:59:21 2021
+Created on Mon Jun 28 19:42:47 2021
 
 @author: MARCELLOCHIESA
 """
-
 import time
 import os
 import numpy as np
@@ -44,13 +43,7 @@ class Appr(object):
 
     def train(self,t,xtrain,ytrain,xvalid,yvalid):
 
-        self.model.train()
-        # attach a global qconfig, which contains information about what kind
-        # of observers to attach.
-        if t==0:
-            self.model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')
-            self.model = torch.quantization.prepare_qat(self.model, inplace=False)
-        # Set optimizer
+        # Update the next learning rate for each parameter based on their uncertainty
         params_dict = []
         params_dict.append({'params': self.model.parameters(), 'lr': self.init_lr})
         self.optimizer = torch.optim.Adam(params_dict, lr=self.init_lr)
@@ -60,18 +53,15 @@ class Appr(object):
         best_model = copy.deepcopy(self.model.state_dict())
         lr = self.init_lr
         patience = self.lr_patience
-        
+        self.scaler = torch.cuda.amp.GradScaler()
         # Set up TensorBoard
         tb = tb_setup(xtrain, ytrain, self.model, 'ordinary',t)
-        
         # Loop epochs
         try:
             for e in range(self.nepochs):
                 # Train step ###############################
                 clock0=time.time()
-                
                 self.train_epoch(t,xtrain,ytrain)
-                
                 clock1=time.time()
                 train_loss,train_acc = self.eval(t,xtrain,ytrain)
                 clock2=time.time()
@@ -80,6 +70,11 @@ class Appr(object):
                 tb.add_scalar('Loss', train_loss, e)
                 tb.add_scalar('Accuracy', train_acc, e)
                 
+#                tb.add_histogram('fc1.mu', self.model.fc1.weight_mu, e)
+#                tb.add_histogram('fc1.rho', self.model.fc1.weight_rho, e)
+#                tb.add_histogram('fc1.mu.grad', self.model.fc1.weight_mu.grad, e)
+#                tb.add_histogram('fc1.rho.grad', self.model.fc1.weight_rho.grad, e)
+                
                 for name, value in self.model.named_parameters():
                     tb.add_histogram(name, value, e )
                     if value.grad is None:
@@ -87,7 +82,7 @@ class Appr(object):
                     else:
                         tb.add_histogram('{}.grad'.format(name), value.grad, e)
                 
-                print('\n| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
+                print('| Epoch {:3d}, time={:5.1f}ms/{:5.1f}ms | Train: loss={:.3f}, acc={:5.1f}% |'.format(e+1,
                     1000*self.sbatch*(clock1-clock0)/xtrain.size(0),1000*self.sbatch*(clock2-clock1)/xtrain.size(0),
                     train_loss,100*train_acc),end='')
                 # Valid accuracy
@@ -121,17 +116,11 @@ class Appr(object):
                 print()
         except KeyboardInterrupt:
             print()
-        
-        # Convert the observed model to a quantized model. This does several things:
-        # quantizes the weights, computes and stores the scale and bias value to be
-        # used with each activation tensor, fuses modules where appropriate,
-        # and replaces key operators with quantized implementations.
-        # if t==self.num_tasks-1:
-        #     self.model = torch.quantization.convert(self.model.eval(), inplace=False)
+            
         # Close TensorBoard
         tb.close()
         # Restore best
-        # self.model.load_state_dict(copy.deepcopy(torch.quantization.convert(best_model.eval(), inplace=False)))
+        self.model.load_state_dict(copy.deepcopy(best_model))
         self.save_model(t)
 
 
@@ -165,19 +154,25 @@ class Appr(object):
             if i+self.sbatch<=len(r): b=r[i:i+self.sbatch]
             else: b=r[i:]
             images, targets = x[b].to(self.device), y[b].to(self.device)
-            # Forward
-            predictions = self.model(images)[t]
-            # Compute loss
-            loss = torch.nn.functional.nll_loss(predictions, targets).to(self.device)
+            with torch.cuda.amp.autocast():
+                # Forward
+                predictions = self.model(images)[t]
+                # Compute loss
+                loss = torch.nn.functional.nll_loss(predictions, targets).to(device=self.device)
 
             # Backward
             # self.model.cuda()
             self.optimizer.zero_grad()
-            loss.backward(retain_graph=True)
+            self.scaler.scale(loss).backward(retain_graph=True)
             # self.model.cuda()
-
+            # Unscales gradients and calls
+            # or skips optimizer.step()
+            self.scaler.step(self.optimizer)
+         
+            # Updates the scale for next iteration
+            self.scaler.update()
             # Update parameters
-            self.optimizer.step()
+            # self.optimizer.step()
         return
 
 
