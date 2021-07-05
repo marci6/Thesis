@@ -34,7 +34,7 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
         os.makedirs(path)
         # Pre-load
         for n,idx in enumerate(idata):
-            if idx==0:
+            if idx==1:
                 # MNIST
                 #mean=(0.1307,) # Mean and std without including the padding
                 #std=(0.3081,)
@@ -56,7 +56,7 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0])
 
-            elif idx == 1:
+            elif idx == 0:
                 # SVHN
                 mean=[0.4377,0.4438,0.4728]
                 std=[0.198,0.201,0.197]
@@ -70,7 +70,7 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                     loader = torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
                     data[n][s] = {'x': [], 'y': []}
                     for sample, target in loader:
-                        data[n][s]['x'].append(image)
+                        data[n][s]['x'].append(sample)
                         data[n][s]['y'].append(target.numpy()[0])
 
             elif idx == 2:
@@ -146,10 +146,10 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
         for n,idx in enumerate(idata):
             data[n] = dict.fromkeys(['name','ncla','train','test'])
             if idx==0:
-                data[n]['name']='mnist'
+                data[n]['name']='svhn'
                 data[n]['ncla']=10
             elif idx==1:
-                data[n]['name']='svhn'
+                data[n]['name']='mnist'
                 data[n]['ncla']=10
             elif idx==2:
                 data[n]['name']='fmnist'
