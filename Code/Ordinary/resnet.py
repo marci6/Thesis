@@ -95,7 +95,7 @@ class ResNet(nn.Module):
         
         self.bn1 = BatchNorm2d(32)
         
-        self.layer1 = self._make_layer(block, 32, layers[0])
+        self.layer1 = self._make_layer(block, 32, layers[0], stride=1)
         self.layer2 = self._make_layer(block, 64, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 128, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 256, layers[3], stride=2)
@@ -118,7 +118,7 @@ class ResNet(nn.Module):
         layers.append(block(self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
-            layers.append(block(self.inplanes, planes, self.args))
+            layers.append(block(self.inplanes, planes, stride))
 
         return nn.Sequential(*layers)
 

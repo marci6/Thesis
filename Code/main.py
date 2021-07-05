@@ -90,7 +90,7 @@ elif args.approach =='resnet':
         from Ordinary import ordinary as approach
     # Args -- Network
     if args.experiment=='mnist2' or args.experiment=='traffic' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar5' or args.experiment == 'cifar10':
-        from Ordinary import resnet as network     
+        from Ordinary import resnet_2 as network     
     
 ########################################################################################################################
 print()
