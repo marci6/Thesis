@@ -162,6 +162,10 @@ class ResNet(nn.Module):
         self.classifier = torch.nn.ModuleList()
         for t, n in self.taskcla:
             self.classifier.append(nn.Linear(self.num_ftrs, n))
+        # QuantStub converts tensors from floating point to quantized
+        self.quant = torch.quantization.QuantStub()
+        # DeQuantStub converts tensors from quantized to floating point
+        self.dequant = torch.quantization.DeQuantStub()
 
     def _make_layer(self, block, planes, blocks, stride=1, dilate=False):
         norm_layer = self._norm_layer
@@ -188,7 +192,7 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def _forward_impl(self, x):
-        # See note [TorchScript super()]
+        x = self.quant(x)
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -198,13 +202,15 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
+        x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
         y = []
-        for t, i in self.taskcla:
-            y.append(self.classifier[t](x))
-        return [F.log_softmax(yy, dim=1) for yy in y]
+        for t,i in self.taskcla:
+            xx = self.classifier[t](x)
+            xx = torch.nn.functional.log_softmax(xx, dim=1)
+            y.append(self.dequant(xx))
+        return y
         
 
     def forward(self, x):

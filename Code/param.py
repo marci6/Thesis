@@ -35,5 +35,5 @@ class Parameters:
         self.results_path = '../results/'
         self.output = ''
         self.head = 'multi'
-        self.qat = False
+        self.qat = True
         self.dynamic = False
