@@ -68,21 +68,19 @@ if args.approach =='ucb':
     else:
         from Networks import UCB as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='traffic' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar5' or args.experiment == 'cifar10':
-        if args.qat:
-            from Networks import MLP_quantized as network
-        else:
-            from Networks import MLP as network
+    
+    if args.qat:
+        from Networks import MLP_quantized as network
     else:
-        from Networks import resnet_ucb as network
+        from Networks import MLP as network
+        
 elif args.approach =='ord':
     if args.qat:
         from Ordinary import ord_qat as approach
     else:
         from Ordinary import ordinary as approach
     # Args -- Network
-    if args.experiment=='mnist2' or args.experiment=='traffic' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar5' or args.experiment == 'cifar10':
-        from Ordinary import MLP as network
+    from Ordinary import MLP as network
 elif args.approach =='resnet':
     if args.qat:
         from Ordinary import ord_qat as approach
@@ -90,12 +88,19 @@ elif args.approach =='resnet':
         from Ordinary import ordinary as approach
     # Args -- Network
     if args.qat:
-        if args.experiment=='mnist2' or args.experiment=='traffic' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar5' or args.experiment == 'cifar10':
-            from Ordinary import resnet_qat as network   
+        from Ordinary import resnet_qat as network   
     else:
-        if args.experiment=='mnist2' or args.experiment=='traffic' or args.experiment=='pmnist' or args.experiment == 'mnist5' or args.experiment == 'omniglot' or args.experiment == 'fmnist' or args.experiment == 'easymix' or args.experiment == 'mnistm' or args.experiment == 'SVHN' or args.experiment == 'cSVHN' or args.experiment == 'cifar5' or args.experiment == 'cifar10':
-            from Ordinary import resnet as network 
-    
+        from Ordinary import resnet as network 
+elif args.approach =='resnet_ucb':
+    if args.qat:
+        from Networks import UCB_qat as approach
+    else:
+        from Networks import UCB as approach
+    # Args -- Network
+    if args.qat:
+        from Networks import resnet_ucb_qat as network   
+    else:
+        from Networks import resnet_ucb as network 
 ########################################################################################################################
 print()
 print("Starting this run on :")

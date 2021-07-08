@@ -31,7 +31,7 @@ def get(data_path,seed,fixed_order=False,pc_valid=0):
         loader=torch.utils.data.DataLoader(dat[s],batch_size=1,shuffle=False)
         data[0][s]={'x': [],'y': []}
         for image,target in loader:
-            label=target.numpy()-1
+            label=target.numpy()
             data[0][s]['x'].append(image)
             data[0][s]['y'].append(label)
 

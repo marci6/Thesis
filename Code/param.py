@@ -18,8 +18,8 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'traffic'
-        self.approach = 'resnet'
+        self.experiment = 'cifar'
+        self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
@@ -35,5 +35,5 @@ class Parameters:
         self.results_path = '../results/'
         self.output = ''
         self.head = 'multi'
-        self.qat = True
+        self.qat = False
         self.dynamic = False
