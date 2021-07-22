@@ -60,6 +60,8 @@ elif args.experiment == 'cifar5':
     from dataloaders import cifar5 as dataloader
 elif args.experiment == 'traffic':
     from dataloaders import traffic as dataloader
+elif args.experiment == 'cfmnist':
+    from dataloaders import fmnist_complete as dataloader
 
 # Args -- Approach
 if args.approach =='ucb':

@@ -5,14 +5,14 @@ from torchvision import datasets,transforms
 
 ########################################################################################################################
 
-# MNIST divided into 5 sets.
+# fashion MNIST divided into 5 sets.
 
 def get(data_path,seed,fixed_order=False,pc_valid=0):
     data={}
     taskcla=[]
     size=[1,28,28]
 
-    # MNIST
+    # fashion MNIST
     mean=(0.2860,)
     std=(0.3530,)
     dat={}
