@@ -65,44 +65,46 @@ elif args.experiment == 'cfmnist':
 
 # Args -- Approach
 if args.approach =='ucb':
-    if args.qat:
-        from Networks import UCB_qat as approach
+    if args.arch == 'mlp':
+        if args.qat:
+            from Networks import UCB_qat as approach
+        else:
+            from Networks import UCB as approach
+        # Args -- Network
+        
+        if args.qat:
+            from Networks import MLP_quantized as network
+        else:
+            from Networks import MLP as network
     else:
-        from Networks import UCB as approach
-    # Args -- Network
-    
-    if args.qat:
-        from Networks import MLP_quantized as network
-    else:
-        from Networks import MLP as network
+        if args.qat:
+            from Ordinary import ord_qat as approach
+        else:
+            from Ordinary import ordinary as approach
+        # Args -- Network
+        if args.qat:
+            from Ordinary import resnet_qat as network   
+        else:
+            from Ordinary import resnet as network 
         
 elif args.approach =='ord':
-    if args.qat:
-        from Ordinary import ord_qat as approach
+    if args.arch == 'mlp':
+        if args.qat:
+            from Ordinary import ord_qat as approach
+        else:
+            from Ordinary import ordinary as approach
+        # Args -- Network
+        from Ordinary import MLP as network
     else:
-        from Ordinary import ordinary as approach
-    # Args -- Network
-    from Ordinary import MLP as network
-elif args.approach =='resnet':
-    if args.qat:
-        from Ordinary import ord_qat as approach
-    else:
-        from Ordinary import ordinary as approach
-    # Args -- Network
-    if args.qat:
-        from Ordinary import resnet_qat as network   
-    else:
-        from Ordinary import resnet as network 
-elif args.approach =='resnet_ucb':
-    if args.qat:
-        from Networks import UCB_qat as approach
-    else:
-        from Networks import UCB as approach
-    # Args -- Network
-    if args.qat:
-        from Networks import resnet_ucb_qat as network   
-    else:
-        from Networks import resnet_ucb as network 
+        if args.qat:
+            from Networks import UCB_qat as approach
+        else:
+            from Networks import UCB as approach
+        # Args -- Network
+        if args.qat:
+            from Networks import resnet_ucb_qat as network   
+        else:
+            from Networks import resnet_ucb as network 
 ########################################################################################################################
 print()
 print("Starting this run on :")
@@ -187,7 +189,7 @@ for t,ncla in taskcla[args.sti:]:
     for u in range(t+1):
         xtest=data[u]['test']['x'].to(args.device)
         ytest=data[u]['test']['y'].to(args.device)
-        test_loss,test_acc=appr.eval(u,xtest,ytest,debug=True)
+        test_loss,test_acc = appr.eval(u,xtest,ytest,debug=True)
         print('>>> Test on task {:2d} - {:15s}: loss={:.3f}, acc={:5.3f}% <<<'.format(u,data[u]['name'],test_loss,100*test_acc))
         acc[t,u]=test_acc
         lss[t,u]=test_loss
@@ -198,7 +200,7 @@ for t,ncla in taskcla[args.sti:]:
 
 
 utils.print_log_acc_bwt(args, acc, lss)
-print('[Elapsed time = {:.1f} h]'.format((time.time()-tstart)/(60*60)))
+print('[Elapsed time = {:.1f} min]'.format((time.time()-tstart)/(60)))
 #%%
 print('\nPre quantization')
 pre_size = utils.print_size_of_model(model)
@@ -256,4 +258,6 @@ if args.dynamic:
                 
         utils.print_log_acc_bwt(args, qacc, qlss)
 
-
+######## CHECK INFERENCE TIME ###########
+mean_syn, std_syn = utils.inference_time(model, args.size)
+print('\nThe mean inference time is {:5.3f}ms and the std is {5.3f}ms'.format(mean_syn, std_syn))

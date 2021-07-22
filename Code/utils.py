@@ -96,7 +96,7 @@ def print_log_acc_bwt(args, acc, lss):
         print()
 
     avg_acc = np.mean(acc[acc.shape[0]-1,:])
-    print ('ACC: {:5.4f}%'.format(avg_acc))
+    print ('ACC: {:5.4f}%'.format(avg_acc*100))
     print()
 
     ucb_bwt = (acc[-1] - np.diag(acc)).mean()
@@ -144,3 +144,28 @@ def print_size_of_model(model, label=""):
     print("model: ",label,' \t','Size (KB):', size/1e3)
     os.remove('temp.p')
     return size
+
+def inference_time(model,size):
+    device = torch.device("cuda")
+    model.to(device)
+    dummy_input = torch.randn(1, size[0],size[1],size[2], dtype=torch.float).to(device)
+    # INIT LOGGERS
+    starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+    repetitions = 300
+    timings=np.zeros((repetitions,1))
+    #GPU-WARM-UP
+    for _ in range(10):
+        _ = model(dummy_input)
+    # MEASURE PERFORMANCE
+    with torch.no_grad():
+        for rep in range(repetitions):
+            starter.record()
+            _ = model(dummy_input)
+            ender.record()
+            # WAIT FOR GPU SYNC
+            torch.cuda.synchronize()
+            curr_time = starter.elapsed_time(ender)
+            timings[rep] = curr_time
+    mean_syn = np.sum(timings) / repetitions
+    std_syn = np.std(timings)
+    return mean_syn, std_syn
