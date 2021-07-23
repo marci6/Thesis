@@ -11,15 +11,15 @@ class Parameters:
         self.sbatch = 64
         self.lr = 0.01
         self.nlayers = 2
-        self.nhid = 256
+        self.nhid = 1000
         self.samples = 10 # posterior samples
         self.rho = -3
         self.std1 = 0.0
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'cfmnist'
-        self.approach = 'ord'
+        self.experiment = 'cSVHN'
+        self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
@@ -35,5 +35,5 @@ class Parameters:
         self.results_path = '../results/'
         self.output = ''
         self.head = 'multi'
-        self.qat = False
+        self.qat = True
         self.dynamic = False

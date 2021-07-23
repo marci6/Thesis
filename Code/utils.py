@@ -146,7 +146,7 @@ def print_size_of_model(model, label=""):
     return size
 
 def inference_time(model,size):
-    device = torch.device("cuda")
+    device = torch.device("cpu")
     model.to(device)
     dummy_input = torch.randn(1, size[0],size[1],size[2], dtype=torch.float).to(device)
     # INIT LOGGERS
