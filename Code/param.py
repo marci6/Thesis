@@ -18,7 +18,7 @@ class Parameters:
         self.std2 = 6.0
         self.pi = 0.25
         self.seed = 0
-        self.experiment = 'cfmnist'
+        self.experiment = 'pmnist'
         self.approach = 'ord'
         self.inputsize = None
         self.taskcla = None
