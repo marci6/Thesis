@@ -258,6 +258,6 @@ if args.dynamic:
                 
         utils.print_log_acc_bwt(args, qacc, qlss)
 #%%
-################ CHECK INFERENCE TIME #######################
+######## CHECK INFERENCE TIME ###########
 mean_syn, std_syn = utils.inference_time(model, args.inputsize)
-print('\nThe mean inference time is {:5.3f} ms and the std is {:5.3f} ms'.format(mean_syn, std_syn))
+print('\nThe mean inference time is {:5.3f}ms and the std is {:5.3f}ms'.format(mean_syn, std_syn))
