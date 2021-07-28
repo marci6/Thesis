@@ -5,7 +5,7 @@ import pickle
 import torch
 from copy import deepcopy
 from torch.utils.tensorboard import SummaryWriter
-
+import matplotlib.pyplot as plt
 import torchvision
 ########################################################################################################################
 def print_arguments(args):
@@ -169,3 +169,14 @@ def inference_time(model,size):
     mean_syn = np.sum(timings) / repetitions
     std_syn = np.std(timings)
     return mean_syn, std_syn
+
+def acc_graph(args, acc):
+    avg_acc = np.zeros((args.num_tasks,1))
+    for i in range(args.num_tasks):
+        avg_acc[i, 0]=np.average(acc[i,:i+1])
+        
+    plt.plot(np.arange(1,args.num_tasks+1),avg_acc)
+    plt.title('Average classification accuracy over all learned tasks')
+    plt.xlabel('# of Tasks')
+    plt.ylabel('Accuracy')
+        
