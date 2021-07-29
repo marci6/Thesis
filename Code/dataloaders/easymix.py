@@ -22,7 +22,7 @@ import utils
 def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
     data={}
     taskcla=[]
-    size=[3,32,32]
+    size=[1,32,32]
 
     idata=np.arange(5)
     if not fixed_order:
@@ -52,7 +52,6 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                     loader=torch.utils.data.DataLoader(dat[s],batch_size=1,shuffle=False)
                     data[n][s]={'x': [],'y': []}
                     for image,target in loader:
-                        image = image.expand(1,3,image.size(2),image.size(3)) # Create 3 equal channels
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0])
 
@@ -69,7 +68,8 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                 for s in ['train','test']:
                     loader = torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
                     data[n][s] = {'x': [], 'y': []}
-                    for sample, target in loader:
+                    for xx, target in loader:
+                        sample = torch.mean(xx,1).unsqueeze(1)
                         data[n][s]['x'].append(sample)
                         data[n][s]['y'].append(target.numpy()[0])
 
@@ -89,7 +89,6 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                     loader=torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
                     data[n][s]={'x': [], 'y': []}
                     for image,target in loader:
-                        image=image.expand(1, 3, image.size(2), image.size(3))  # Create 3 equal channels
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0])
 
@@ -107,7 +106,8 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                 for s in ['train','test']:
                     loader = torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
                     data[n][s] = {'x': [], 'y': []}
-                    for image, target in loader:
+                    for xx, target in loader:
+                        sample = torch.mean(xx,1).unsqueeze(1)
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0])
             elif idx == 4:
@@ -125,7 +125,6 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                     loader = torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
                     data[n][s] = {'x': [], 'y': []}
                     for image, target in loader:
-                        image=image.expand(1,3,image.size(2),image.size(3))
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0])
             else:
