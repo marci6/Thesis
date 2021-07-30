@@ -93,21 +93,19 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                         data[n][s]['y'].append(target.numpy()[0])
 
             elif idx == 3:
-                # Traffic signs
-                mean=[0.3398,0.3117,0.3210]
-                std=[0.2755,0.2647,0.2712]
+                # CIFAR10
+                mean=[x/255 for x in [125.3,123.0,113.9]]
+                std=[x/255 for x in [63.0,62.1,66.7]]
                 dat={}
-                dat['train']=TrafficSigns(os.path.join(data_path, '../data/traffic_signs'), train=True, download=True, transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean,std)]))
-                dat['test']=TrafficSigns(os.path.join(data_path, '../data/traffic_signs'), train=False, download=True, transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean,std)]))
-                # mean, var = utils.compute_mean_std_dataset(dat['train'])
+                dat['train']=datasets.CIFAR10(data_path,train=True,download=True,transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean,std)]))
+                dat['test']=datasets.CIFAR10(data_path,train=False,download=True,transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean,std)]))
                 data[n]={}
-                data[n]['name']='traffic-signs'
-                data[n]['ncla']=43
+                data[n]['name']='cifar10'
+                data[n]['ncla']=10
                 for s in ['train','test']:
-                    loader = torch.utils.data.DataLoader(dat[s], batch_size=1, shuffle=False)
-                    data[n][s] = {'x': [], 'y': []}
-                    for xx, target in loader:
-                        sample = torch.mean(xx,1).unsqueeze(1)
+                    loader=torch.utils.data.DataLoader(dat[s],batch_size=1,shuffle=False)
+                    data[n][s]={'x': [],'y': []}
+                    for image,target in loader:
                         data[n][s]['x'].append(image)
                         data[n][s]['y'].append(target.numpy()[0])
             elif idx == 4:

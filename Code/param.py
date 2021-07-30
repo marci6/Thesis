@@ -11,7 +11,7 @@ class Parameters:
         self.sbatch = 64
         self.lr = 0.01
         self.nlayers = 1
-        self.nhid = 256
+        self.nhid = 500
         self.samples = 10 # posterior samples
         self.rho = -3
         self.std1 = 0.0
@@ -19,11 +19,11 @@ class Parameters:
         self.pi = 0.25
         self.seed = 0
         self.experiment = 'easymix'
-        self.approach = 'ord'
+        self.approach = 'ucb'
         self.inputsize = None
         self.taskcla = None
         self.data_path = '../data/'
-        self.nepochs = 2
+        self.nepochs = 10
         self.resume = 'no'
         self.save_model = False
         self.save_path = '../saved_models/'
