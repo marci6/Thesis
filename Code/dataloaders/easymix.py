@@ -153,8 +153,8 @@ def get(data_path,seed=0,pc_valid=0.15, fixed_order=True):
                 data[n]['name']='fmnist'
                 data[n]['ncla']=10
             elif idx==3:
-                data[n]['name']='traffic-sign'
-                data[n]['ncla']=43
+                data[n]['name']='cifar10'
+                data[n]['ncla']=10
             elif idx==4:
                 data[n]['name']='not-mnist'
                 data[n]['ncla']=10
