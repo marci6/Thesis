@@ -1,9 +1,0 @@
-LOG
-
-27/5/2021: run file, tested parameters import, working
-30/5/2021: mnist-5 training works, results with # epochs = 2 are very high AVG ACC >97%. Need to check all the functions and math behind.
-Next test all other datasets. Check dataset composition. Create visuals/ check for tensorflow board. 
-31/5/2021: Comparison paper - code. SGD in depth. Still to understand why a modulelist. Tensorboard?
-3/6/2021: Tested TensorBoard - success. Open with tensorboard --logdir=D:\Users\marcello\Desktop\Thesis\Thesis\TensorBoards --host localhost --port 8088
-4/6/2021: Added CNN. Omniglot to be downloaded
-9/6/2021: Test size. Future tasks => record lr cahnges and create a visualization, single-head network
